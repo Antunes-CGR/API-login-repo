@@ -1,0 +1,7 @@
+npm install bcrypt dotenv express jsonwebtoken mongoose
+
+bcrypt - senhas complexas 
+dotenv
+express
+jsonwebtoken -senhas também
+mongoose - DB
