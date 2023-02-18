@@ -148,6 +148,24 @@ app.post("/auth/login", async (req, res) => {
   }
 });
 
+app.get("/tasks", async (req, res) => {
+  const tasks = [];
+
+  res.status(200).json(tasks);
+});
+app.post("/tasks", async (req, res) => {
+  const task = {};
+
+  res.status(201).json(task);
+});
+app.delete("/tasks/:id", async (req, res) => {
+  res.status(202);
+});
+app.patch("/tasks/:id", async (req, res) => {
+  const task = {};
+
+  res.status(202).json(task);
+});
 //Credenciais
 
 const dbUser = process.env.DB_USER;
