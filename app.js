@@ -152,6 +152,7 @@ app.post("/auth/login", async (req, res) => {
 
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASS;
+mongoose.set("strictQuery", true);
 
 mongoose
   .connect(
