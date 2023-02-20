@@ -10,8 +10,10 @@ const app = express();
 // Config JSON response
 app.use(express.json());
 
-// Models
+// requests
 const User = require("./models/User");
+const Task = require("./models/Task");
+const register = require("./routes/registro");
 
 //Open Route - Public Route
 app.get("/", (req, res) => {
@@ -52,23 +54,6 @@ function checkToken(req, res, next) {
 //Register User
 app.post("/auth/register", async (req, res) => {
   const { name, email, password, confirmpassword } = req.body;
-
-  //validations
-  if (!name) {
-    return res.status(422).json({ msg: "O nome é obrigatório!" });
-  }
-
-  if (!email) {
-    return res.status(422).json({ msg: "O email é obrigatório!" });
-  }
-
-  if (!password) {
-    return res.status(422).json({ msg: "O password é obrigatório!" });
-  }
-
-  if (password !== confirmpassword) {
-    return res.status(422).json({ msg: "As senhas não conferem!" });
-  }
 
   //check if user exists
   const userExists = await User.findOne({ email: email });
@@ -148,6 +133,24 @@ app.post("/auth/login", async (req, res) => {
   }
 });
 
+app.get("/tasks", async (req, res) => {
+  const tasks = [];
+
+  res.status(200).json(tasks);
+});
+app.post("/tasks/", async (req, res) => {
+  const task = {};
+
+  res.status(201).json(task);
+});
+app.delete("/tasks/:id", async (req, res) => {
+  res.status(202);
+});
+app.patch("/tasks/:id", async (req, res) => {
+  const task = {};
+
+  res.status(202).json(task);
+});
 //Credenciais
 
 const dbUser = process.env.DB_USER;
