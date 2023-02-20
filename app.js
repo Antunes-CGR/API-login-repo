@@ -13,7 +13,8 @@ app.use(express.json());
 // requests
 const User = require("./models/User");
 const Task = require("./models/Task");
-const register = require("./routes/registro");
+const RouteRegister = require("./routes/registro");
+const RouteLogin = require("./routes/login")
 
 //Open Route - Public Route
 app.get("/", (req, res) => {
@@ -89,15 +90,6 @@ app.post("/auth/register", async (req, res) => {
 // Login User
 app.post("/auth/login", async (req, res) => {
   const { email, password } = req.body;
-
-  // validations
-  if (!email) {
-    return res.status(422).json({ msg: "O email é obrigatório!" });
-  }
-
-  if (!password) {
-    return res.status(422).json({ msg: "O password é obrigatório!" });
-  }
 
   // Check if user exists
   const user = await User.findOne({ email: email });
