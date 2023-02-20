@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-function register() {
+function RouteRegister() {
   app.post("/auth/register", async (req, res) => {
     const { name, email, password, confirmpassword } = req.body;
 
@@ -23,4 +23,4 @@ function register() {
   });
 }
 
-module.exports = register;
+module.exports = RouteRegister;
