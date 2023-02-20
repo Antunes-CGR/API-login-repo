@@ -7,14 +7,15 @@ const jwt = require("jsonwebtoken");
 
 const app = express();
 
+// routers
+const authRouter = require('./routes/auth.js')
+
 // Config JSON response
 app.use(express.json());
 
 // requests
-const User = require("./models/User");
-const Task = require("./models/Task");
-const RouteRegister = require("./routes/registro");
-const RouteLogin = require("./routes/login")
+const User = require('./models/User');
+const Task = require('./models/Task');
 
 //Open Route - Public Route
 app.get("/", (req, res) => {
@@ -52,79 +53,6 @@ function checkToken(req, res, next) {
   }
 }
 
-//Register User
-app.post("/auth/register", async (req, res) => {
-  const { name, email, password, confirmpassword } = req.body;
-
-  //check if user exists
-  const userExists = await User.findOne({ email: email });
-
-  if (userExists) {
-    return res.status(422).json({ msg: "Por favor, utilize outro email!" });
-  }
-
-  //create password
-  const salt = await bcrypt.genSalt(12);
-  const passwordHash = await bcrypt.hash(password, salt);
-
-  //create user
-  const user = new User({
-    name,
-    email,
-    password: passwordHash,
-  });
-
-  try {
-    await user.save();
-
-    res.status(201).json({ msg: "Usuário criado com sucesso!" });
-  } catch (error) {
-    console.log(error);
-
-    res.status(500).json({
-      msg: "Aconteceu algum erro no servidor, tente novamente mais tarde!",
-    });
-  }
-});
-
-// Login User
-app.post("/auth/login", async (req, res) => {
-  const { email, password } = req.body;
-
-  // Check if user exists
-  const user = await User.findOne({ email: email });
-
-  if (!user) {
-    return res.status(422).json({ msg: "Usuário não encontrado!" });
-  }
-
-  //check if password match
-  const checkPassword = await bcrypt.compare(password, user.password);
-
-  if (!checkPassword) {
-    return res.status(422).json({ msg: "Senha inválida!" });
-  }
-
-  try {
-    const secret = process.env.SECRET;
-
-    const token = jwt.sign(
-      {
-        id: user._id,
-      },
-      secret
-    );
-
-    res.status(200).json({ msg: "Autenticação realizada com secuesso", token });
-  } catch (error) {
-    console.log(error);
-
-    res.status(500).json({
-      msg: "Aconteceu um erro no servidor, tente novamente mais tarde!",
-    });
-  }
-});
-
 app.get("/tasks", async (req, res) => {
   const tasks = [];
 
@@ -143,7 +71,9 @@ app.patch("/tasks/:id", async (req, res) => {
 
   res.status(202).json(task);
 });
+
 //Credenciais
+app.use('/auth', authRouter)
 
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASS;
