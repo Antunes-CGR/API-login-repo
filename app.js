@@ -13,8 +13,6 @@ app.use(express.json());
 // requests
 const User = require("./models/User");
 const Task = require("./models/Task");
-const RouteRegister = require("./routes/registro");
-const RouteLogin = require("./routes/login")
 
 //Open Route - Public Route
 app.get("/", (req, res) => {
@@ -125,24 +123,37 @@ app.post("/auth/login", async (req, res) => {
   }
 });
 
-app.get("/tasks", async (req, res) => {
-  const tasks = [];
+app.get("/tasks", checkToken, async (req, res) => {
+  const [ ,token] = req.headers.authorization.split(' ')
+  const {id: user_id} = jwt.decode(token)
 
-  res.status(200).json(tasks);
+  const tasks = await Task.find({ user_id })
+  return res.status(200).json(tasks);
 });
-app.post("/tasks/", async (req, res) => {
-  const task = {};
 
-  res.status(201).json(task);
-});
-app.delete("/tasks/:id", async (req, res) => {
-  res.status(202);
-});
-app.patch("/tasks/:id", async (req, res) => {
-  const task = {};
+// app.post("/tasks/", async (req, res) => {
 
-  res.status(202).json(task);
-});
+//   res.status(201).json(task);
+// });
+
+// app.delete("/tasks/destroy/:id", async (req, res) => {
+//   const { user_id } = req.header
+
+//   if(user_id === user_id){
+//     await user_id.findByIdAndDelete({ _id: user_id})
+
+//     return res.status(200).json({msg:'deletado'})
+//   } else {
+
+//     return res.status(403).json({msg:'erro'})
+//   }
+// })
+// app.patch('/tasks/:id', async (req, res) => {
+//   const task = {}
+  
+//   res.status(202).json(task)
+
+// });
 //Credenciais
 
 const dbUser = process.env.DB_USER;
