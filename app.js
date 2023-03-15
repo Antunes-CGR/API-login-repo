@@ -136,8 +136,14 @@ app.post("/tasks", checkToken, async (req, res) => {
   const { id: user_id } = jwt.decode(token);
 
   // validacao 00 - formulario esta ok?
-  if (!req.body.titulo || req.body.titulo === '' || req.body.titulo.length < 3) {
-    return res.status(400).json({ titulo: 'Deve conter pelo menos 3 caracteres' })
+  if (
+    !req.body.titulo ||
+    req.body.titulo === "" ||
+    req.body.titulo.length < 3
+  ) {
+    return res
+      .status(400)
+      .json({ titulo: "Deve conter pelo menos 3 caracteres" });
   }
 
   const TaskCreate = await Task.create({
@@ -187,36 +193,53 @@ app.put("/tasks/:_id", checkToken, async (req, res) => {
     }
 
     // validacao 00 - formulario esta ok?
-    if (!req.body.titulo || req.body.titulo === '' || req.body.titulo.length < 3) {
-      return res.status(400).json({ titulo: 'Deve conter pelo menos 3 caracteres' })
+    if (!req.body.titulo || req.body.titulo === "" || req.body.titulo.length < 3) {
+      return res
+        .status(400)
+        .json({ titulo: "Deve conter pelo menos 3 caracteres" });
     }
 
     // validacao 01 - task existe? (opcional, a validacao 02 ja verifica se a task existe)
-    const contarTasksComEsseID = await Task.count({ _id })
+    const contarTasksComEsseID = await Task.count({ _id });
     if (contarTasksComEsseID === 0) {
-      return res.status(404).json({ erro: 'Task nao existe' }) // nao encontrado
+      return res.status(404).json({ erro: "Task nao existe" }); // nao encontrado
     }
 
     // validacao 02 - task eh do usuario?
-    const taskDoUsuario = await Task.findOne({ _id, user_id })
+    const taskDoUsuario = await Task.findOne({ _id, user_id });
     if (!taskDoUsuario) {
-      return res.status(403).json({ erro: 'Voce nao pode alterar essa task' }) // nao autorizado
+      return res.status(403).json({ erro: "Voce nao pode alterar essa task" }); // nao autorizado
     }
 
-    taskDoUsuario.titulo = req.body.titulo
-    await taskDoUsuario.save()
+    taskDoUsuario.titulo = req.body.titulo;
+    await taskDoUsuario.save();
 
-    return res.status(200).json(taskDoUsuario)
+    return res.status(200).json(taskDoUsuario);
   } catch (erro) {
     console.log(erro);
   }
 });
 
 app.put("/tasks/:_id/completed", checkToken, async (req, res) => {
-  // validar se a task pertence ao usuario
-  // Esse eh um PUT sem body!
-  // recebe um ID de task e marca ela como completed
-})
+  try {
+    // validar se a task pertence ao usuario
+    const [, token] = req.headers.authorization.split(" ");
+    const { id: user_id } = jwt.decode(token);
+    const { _id } = req.params;
+
+    const taskDoUsuario = await Task.findById({ _id, user_id });
+
+    if (!taskDoUsuario) {
+      return res.status(404).json({ msg: "Usuário não autorizado" });
+    }
+
+    const taskCompleted = await Task.findOneAndUpdate({ completed_at: new Date() });
+
+    return res.json(taskCompleted);
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 //Credenciais
 
