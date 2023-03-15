@@ -188,7 +188,7 @@ app.put("/tasks/:_id", checkToken, async (req, res) => {
     const { _id } = req.params;
 
     // validation -01 - _id eh valido?
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
       return res.status(404).json({ msg: "task id inválido" });
     }
 
