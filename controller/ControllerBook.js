@@ -16,11 +16,29 @@ class BookController {
       // const [, token] = req.headers.authorization.split(" ");
       // const { id: user_id } = jwt.decode(token);
 
+      //VALIDAÇÕES
+      const { titulo, autor, ISBN } = req.body
+
+      if(!titulo || titulo.length < 3 || titulo === ""){
+        return res.status(400).json({msg:"Necessário preenchimento do titulo"})
+      }
+
+      if(!autor || autor === ""){
+        return res.status(400).json({msg:"Necessário preenchimento do autor"})
+      }
+
+      if(!ISBN || ISBN.length < 7 || ISBN === ""){
+        return res.status(400).json({msg:"ISBN mínimo 7 caracteres"})
+      }
+
+      // CRIAÇÃO BOOK
       const taskBook = await TaskBook.create({
         titulo: req.body.titulo,
         autor: req.body.autor,
         ISBN: req.body.ISBN,
       });
+
+      await taskBook.save()
 
       return res.json(taskBook);
     } catch (error) {
@@ -31,6 +49,20 @@ class BookController {
     try {
       const { _id } = req.params;
 
+      // VALIDAÇÕES
+      if(!titulo || titulo.length < 3 || titulo === ""){
+        return res.status(400).json({msg:"Necessário preenchimento do titulo"})
+      }
+
+      if(!autor || autor === ""){
+        return res.status(400).json({msg:"Necessário preenchimento do autor"})
+      }
+
+      if(!ISBN || ISBN.length < 7 || ISBN === ""){
+        return res.status(400).json({msg:"ISBN mínimo 7 caracteres"})
+      }     
+      
+      //UPDATE DO BOOK
       const taskBook = {
         titulo: req.body.titulo,
         autor: req.body.autor,
