@@ -16,6 +16,7 @@ app.use(express.json());
 // requests
 const User = require('./models/User');
 const Task = require('./models/Task');
+const TaskBookController = require('./controllers/ControllerTaskBook')
 
 //Open Route - Public Route
 app.get("/", (req, res) => {
@@ -71,6 +72,11 @@ app.patch("/tasks/:id", async (req, res) => {
 
   res.status(202).json(task);
 });
+
+//Rotas Controller Book
+app.get('/taskBook', TaskBookController.index)
+
+
 
 //Credenciais
 app.use('/auth', authRouter)
