@@ -143,9 +143,7 @@ app.post("/tasks", checkToken, async (req, res) => {
     req.body.titulo === "" ||
     req.body.titulo.length < 3
   ) {
-    return res
-      .status(400)
-      .json({ titulo: "Deve conter pelo menos 3 caracteres" });
+    return res.status(400).json({ titulo: "Deve conter pelo menos 3 caracteres" });
   }
 
   const TaskCreate = await Task.create({
