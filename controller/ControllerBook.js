@@ -1,21 +1,21 @@
-const TaskBook = require("../models/Book");
-const mongoose = require('mongoose')
-const jwt = require("jsonwebtoken");
+const TaskBook = require("../models/Book")
+const mongoose = require("mongoose")
+const jwt = require("jsonwebtoken")
 
 class BookController {
   async index(req, res) {
     try {
-      const listBook = await TaskBook.find();
+      const listBook = await TaskBook.find()
 
-      return res.status(200).json(listBook);
+      return res.status(200).json(listBook)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   }
   async store(req, res) {
     try {
-      const [, token] = req.headers.authorization.split(" ");
-      const { id: user_id } = jwt.decode(token);
+      const [, token] = req.headers.authorization.split(" ")
+      const { id: user_id } = jwt.decode(token)
 
 
       //VALIDAÇÕES
@@ -39,19 +39,19 @@ class BookController {
         titulo: req.body.titulo,
         autor: req.body.autor,
         ISBN: req.body.ISBN,
-      });
+      })
 
       await taskBook.save()
 
-      return res.json(taskBook);
+      return res.json(taskBook)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   }
   async update(req, res) {
     try {
-      const [, token] = req.headers.authorization.split(" ");
-      const { id: user_id } = jwt.decode(token);
+      const [, token] = req.headers.authorization.split(" ")
+      const { id: user_id } = jwt.decode(token)
       const { _id } = req.params
       const { titulo, autor, ISBN } = req.body
 
@@ -75,31 +75,31 @@ class BookController {
         titulo: req.body.titulo,
         autor: req.body.autor,
         ISBN: req.body.ISBN,
-      };
+      }
 
       //VALIDAÇÃO DE ID
       if (!mongoose.Types.ObjectId.isValid(_id)) {
-        return res.status(404).json({ msg: "book id inválido" });
+        return res.status(404).json({ msg: "book id inválido" })
       }
 
       const UserUpdateBook = await TaskBook.findById(_id, user_id)
       if(!UserUpdateBook){
-      return res.status(403).json({ erro: "Voce nao pode alterar esse ebook" });         
+        return res.status(403).json({ erro: "Voce nao pode alterar esse ebook" })         
       }
 
-      const updateBook = await TaskBook.findByIdAndUpdate(_id, taskBook);
+      const updateBook = await TaskBook.findByIdAndUpdate(_id, taskBook)
 
 
-      return res.status(200).json(updateBook);
+      return res.status(200).json(updateBook)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   }
   async destroy(req, res) {
     try {
-      const [, token] = req.headers.authorization.split(" ");
-      const { id: user_id } = jwt.decode(token);
-      const { _id } = req.params;
+      const [, token] = req.headers.authorization.split(" ")
+      const { id: user_id } = jwt.decode(token)
+      const { _id } = req.params
 
       //VALIDAÇÃO DE USUÁRIO AUTORIZADO
       const UserDestroyBook = await TaskBook.findById(_id, user_id)
@@ -107,25 +107,25 @@ class BookController {
         return res.status(400).json({msg:"Usuário não autorizado"})
       }
 
-      const destroyBook = await TaskBook.findByIdAndDelete(_id);
+      const destroyBook = await TaskBook.findByIdAndDelete(_id)
 
-      return res.status(200).json(destroyBook);
+      return res.status(200).json(destroyBook)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   }
   async show(req, res) {
     try {
 
-      const { _id } = req.params;
+      const { _id } = req.params
 
-      const showBook = await TaskBook.findById(_id);
+      const showBook = await TaskBook.findById(_id)
 
-      return res.status(200).json({ msg: "Livro!", showBook });
+      return res.status(200).json({ msg: "Livro!", showBook })
     } catch (error) {
       console.log(error)
     }
   }
 }
 
-module.exports = new BookController();
+module.exports = new BookController()
