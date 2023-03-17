@@ -244,9 +244,9 @@ app.put("/tasks/:_id/completed", checkToken, async (req, res) => {
 //Rotas Controller Book
 app.get('/taskBook', ControllerBook.index)
 app.post('/taskBook', ControllerBook.store)
-app.put('/taskBook/:_id', ControllerBook.update)
-app.delete('/taskBook/:_id', ControllerBook.destroy)
-app.get('/taskBook/:_id', ControllerBook.show)
+app.put('/taskBook/:_id', checkToken, ControllerBook.update)
+app.delete('/taskBook/:_id',checkToken, ControllerBook.destroy)
+app.get('/taskBook/:_id', checkToken, ControllerBook.show)
 
 
 
