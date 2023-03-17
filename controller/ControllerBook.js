@@ -12,7 +12,6 @@ class BookController {
       console.log(error);
     }
   }
-
   async store(req, res) {
     try {
       const [, token] = req.headers.authorization.split(" ");

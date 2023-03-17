@@ -1,20 +1,21 @@
-/*imnports*/
+// libs
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
-const app = express();
-
-// Config JSON response
-app.use(express.json());
-
-// requests
+// middlewares
+const { checkToken } = require("./middlewares/authentication")
+// models
 const User = require("./models/User");
 const Task = require("./models/Task");
-const Book = require('./controller/ControllerBook');
+// controllers
 const ControllerBook = require("./controller/ControllerBook");
+
+
+
+const app = express();
+app.use(express.json());
 
 //Open Route - Public Route
 app.get("/", (req, res) => {
@@ -34,23 +35,6 @@ app.get("/user/:id", checkToken, async (req, res) => {
 
   res.status(200).json({ user });
 });
-
-function checkToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (!token) {
-    return res.status(401).json({ msg: "acesso negado!" });
-  }
-
-  try {
-    const secret = process.env.SECRET;
-    jwt.verify(token, secret);
-    next();
-  } catch (error) {
-    res.status(400).json({ msg: "Token inválido " });
-  }
-}
 
 //Register User
 app.post("/auth/register", async (req, res) => {
@@ -126,16 +110,14 @@ app.post("/auth/login", async (req, res) => {
 });
 
 app.get("/tasks", checkToken, async (req, res) => {
-  const [, token] = req.headers.authorization.split(" ");
-  const { id: user_id } = jwt.decode(token);
+  const { user_id } = res.locals
 
   const tasks = await Task.find({ user_id });
   return res.status(200).json(tasks);
 });
 
 app.post("/tasks", checkToken, async (req, res) => {
-  const [, token] = req.headers.authorization.split(" ");
-  const { id: user_id } = jwt.decode(token);
+  const { user_id } = res.locals
 
   // validacao 00 - formulario esta ok?
   if (
@@ -147,7 +129,7 @@ app.post("/tasks", checkToken, async (req, res) => {
   }
 
   const TaskCreate = await Task.create({
-    user_id: user_id,
+    user_id,
     titulo: req.body.titulo,
     created_at: new Date(),
     completed_at: null,
@@ -243,10 +225,10 @@ app.put("/tasks/:_id/completed", checkToken, async (req, res) => {
 
 //Rotas Controller Book
 app.get('/taskBook', ControllerBook.index)
-app.post('/taskBook', ControllerBook.store)
+app.post('/taskBook', checkToken, ControllerBook.store)
 app.put('/taskBook/:_id', checkToken, ControllerBook.update)
 app.delete('/taskBook/:_id',checkToken, ControllerBook.destroy)
-app.get('/taskBook/:_id', checkToken, ControllerBook.show)
+app.get('/taskBook/:_id', ControllerBook.show)
 
 
 
