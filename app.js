@@ -13,6 +13,8 @@ app.use(express.json());
 // requests
 const User = require("./models/User");
 const Task = require("./models/Task");
+const Book = require('./controller/ControllerBook');
+const ControllerBook = require("./controller/ControllerBook");
 
 //Open Route - Public Route
 app.get("/", (req, res) => {
@@ -240,6 +242,15 @@ app.put("/tasks/:_id/completed", checkToken, async (req, res) => {
     console.log(error);
   }
 });
+
+//Rotas Controller Book
+app.get('/taskBook', ControllerBook.index)
+app.post('/taskBook', ControllerBook.store)
+app.put('/taskBook/:_id', ControllerBook.update)
+app.delete('/taskBook/:_id', ControllerBook.destroy)
+app.get('/taskBook/:_id', ControllerBook.show)
+
+
 
 //Credenciais
 
