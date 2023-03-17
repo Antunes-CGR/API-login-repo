@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 // middlewares
 const { checkToken } = require("./middlewares/authentication")
+const { validarFormTask } = require("./middlewares/task_validator")
 // models
 const User = require("./models/User");
 const Task = require("./models/Task");
@@ -116,17 +117,8 @@ app.get("/tasks", checkToken, async (req, res) => {
   return res.status(200).json(tasks);
 });
 
-app.post("/tasks", checkToken, async (req, res) => {
+app.post("/tasks", checkToken, validarFormTask, async (req, res) => {
   const { user_id } = res.locals
-
-  // validacao 00 - formulario esta ok?
-  if (
-    !req.body.titulo ||
-    req.body.titulo === "" ||
-    req.body.titulo.length < 3
-  ) {
-    return res.status(400).json({ titulo: "Deve conter pelo menos 3 caracteres" });
-  }
 
   const TaskCreate = await Task.create({
     user_id,
