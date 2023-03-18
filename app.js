@@ -130,7 +130,7 @@ app.post("/tasks", checkToken, validarFormTask, async (req, res) => {
 
 app.delete("/tasks/:id", checkToken, async (req, res) => {
   try {
-
+    const { user_id } = res.locals
     const id = req.params.id
 
     // validation
@@ -154,6 +154,8 @@ app.delete("/tasks/:id", checkToken, async (req, res) => {
 
 app.put("/tasks/:_id", checkToken, validarFormTask, async (req, res) => {
   try {
+
+    const { user_id } = res.locals
 
     const { _id } = req.params
 
@@ -188,6 +190,7 @@ app.put("/tasks/:_id/completed", checkToken, async (req, res) => {
     // validar se a task pertence ao usuario
 
     const { _id } = req.params
+    const { user_id } = res.locals
 
     const taskDoUsuario = await Task.findById({ _id, user_id })
 
