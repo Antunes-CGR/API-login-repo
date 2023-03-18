@@ -130,8 +130,7 @@ app.post("/tasks", checkToken, validarFormTask, async (req, res) => {
 
 app.delete("/tasks/:id", checkToken, async (req, res) => {
   try {
-    const [, token] = req.headers.authorization.split(" ")
-    const { id: user_id } = jwt.decode(token)
+
     const id = req.params.id
 
     // validation
@@ -153,26 +152,14 @@ app.delete("/tasks/:id", checkToken, async (req, res) => {
   }
 })
 
-app.put("/tasks/:_id", checkToken, async (req, res) => {
+app.put("/tasks/:_id", checkToken, validarFormTask, async (req, res) => {
   try {
-    const [, token] = req.headers.authorization.split(" ")
-    const { id: user_id } = jwt.decode(token)
+
     const { _id } = req.params
 
     // validation -01 - _id eh valido?
     if (!mongoose.Types.ObjectId.isValid(_id)) {
       return res.status(404).json({ msg: "task id inválido" })
-    }
-
-    // validacao 00 - formulario esta ok?
-    if (
-      !req.body.titulo ||
-      req.body.titulo === "" ||
-      req.body.titulo.length < 3
-    ) {
-      return res
-        .status(400)
-        .json({ titulo: "Deve conter pelo menos 3 caracteres" })
     }
 
     // validacao 01 - task existe? (opcional, a validacao 02 ja verifica se a task existe)
@@ -199,8 +186,7 @@ app.put("/tasks/:_id", checkToken, async (req, res) => {
 app.put("/tasks/:_id/completed", checkToken, async (req, res) => {
   try {
     // validar se a task pertence ao usuario
-    const [, token] = req.headers.authorization.split(" ")
-    const { id: user_id } = jwt.decode(token)
+
     const { _id } = req.params
 
     const taskDoUsuario = await Task.findById({ _id, user_id })
