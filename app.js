@@ -46,6 +46,16 @@ app.post("/auth/register", async (req, res) => {
     return res.status(422).json({ msg: "Por favor, utilize outro email!" })
   }
 
+  //check password match
+  if(confirmpassword === ""){
+    return res.status(400).json({msg:"necessário preenchimento da área de confirmação"})
+  }
+
+  if(confirmpassword !== password){
+    return res.status(400).json({msg:"senhas não conferem"})
+  }
+
+
   //create password
   const salt = await bcrypt.genSalt(12)
   const passwordHash = await bcrypt.hash(password, salt)
@@ -156,7 +166,6 @@ app.put("/tasks/:_id", checkToken, validarFormTask, async (req, res) => {
   try {
 
     const { user_id } = res.locals
-
     const { _id } = req.params
 
     // validation -01 - _id eh valido?
