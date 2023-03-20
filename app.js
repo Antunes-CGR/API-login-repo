@@ -6,10 +6,12 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 // middlewares
 const { checkToken } = require("./middlewares/authentication")
-const { validarFormTask } = require("./middlewares/task_validator")
+const { validarFormTask } = require("./middlewares/TaskValidator/task_validator")
 const { loginValidator } = require("./middlewares/login_validator")
 const { registerValidator } = require("./middlewares/register_validator")
-const { taskDeleteValidator } = require("./middlewares/taskDelete_validator")
+const { taskDeleteValidator } = require("./middlewares/TaskValidator/taskDelete_validator")
+const { taskUpdateValidator } = require("./middlewares/TaskValidator/taskUpdate_validator")
+const { bookUpdateValidator } = require("./middlewares/BookValidator/bookUpdate_validator")
 // models
 const User = require("./models/User")
 const Task = require("./models/Task")
@@ -131,7 +133,7 @@ app.delete("/tasks/:id", checkToken, taskDeleteValidator, async (req, res) => {
   }
 })
 
-app.put("/tasks/:_id", checkToken, validarFormTask, async (req, res) => {
+app.put("/tasks/:_id", checkToken, taskUpdateValidator, async (req, res) => {
   try {
 
     const { user_id } = res.locals
@@ -175,7 +177,7 @@ app.put("/tasks/:_id/completed", checkToken, async (req, res) => {
 //Rotas Controller Book
 app.get("/taskBook", ControllerBook.index)
 app.post("/taskBook", checkToken, ControllerBook.store)
-app.put("/taskBook/:_id", checkToken, ControllerBook.update)
+app.put("/taskBook/:_id", checkToken, bookUpdateValidator, ControllerBook.update)
 app.delete("/taskBook/:_id", checkToken, ControllerBook.destroy)
 app.get("/taskBook/:_id", ControllerBook.show)
 

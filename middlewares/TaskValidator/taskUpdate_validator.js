@@ -1,9 +1,7 @@
 const mongoose = require("mongoose")
-const Task = require("../models/Task")
+const Task = require("../../models/Task")
 
 const taskUpdateValidator = async (req, res, next) => {
-
-
   const { user_id } = res.locals
   const { _id } = req.params
 

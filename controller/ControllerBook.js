@@ -2,8 +2,6 @@ const TaskBook = require("../models/Book")
 const mongoose = require("mongoose")
 const jwt = require("jsonwebtoken")
 
-//middleware
-
 class BookController {
   async index(req, res) {
     try {
