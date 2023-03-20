@@ -1,28 +1,28 @@
 const User = require("../models/User")
-const bcrypt = require("bcrypt")
 
+const registerValidator = async (req, res, next) => {
+  const { email, password, confirmpassword } = req.body
 
-const loginValidator = async (req, res, next) => {
-  const { email, password } = req.body
+  //check if user exists
+  const userExists = await User.findOne({ email: email })
 
-  // Check if user exists
-  const user = await User.findOne({ email: email })
-
-  if (!user) {
-    return res.status(422).json({ msg: "Usuário não encontrado!" })
+  if (userExists) {
+    return res.status(422).json({ msg: "Por favor, utilize outro email!" })
   }
 
-  //check if password match
-  const checkPassword = await bcrypt.compare(password, user.password)
-
-  if (!checkPassword) {
-    return res.status(422).json({ msg: "Senha inválida!" })
+  //check password match
+  if(confirmpassword === ""){
+    return res.status(400).json({msg:"necessário preenchimento da área de confirmação"})
   }
+
+  if(confirmpassword !== password){
+    return res.status(400).json({msg:"senhas não conferem"})
+  }
+
 
   next()
 }
 
-
 module.exports = {
-  loginValidator
+  registerValidator
 }

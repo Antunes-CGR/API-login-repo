@@ -7,7 +7,8 @@ const jwt = require("jsonwebtoken")
 // middlewares
 const { checkToken } = require("./middlewares/authentication")
 const { validarFormTask } = require("./middlewares/task_validator")
-const { loginValidator } = require("./middlewares/register_validator")
+const { loginValidator } = require("./middlewares/login_validator")
+const { registerValidator } = require("./middlewares/register_validator")
 // models
 const User = require("./models/User")
 const Task = require("./models/Task")
@@ -23,7 +24,7 @@ app.get("/", (req, res) => {
 })
 
 // Private Route
-app.get("/user/:id", checkToken, async (req, res) => {
+app.get("/user/:id", checkToken,  async (req, res) => {
   const id = req.params.id
 
   // check if user exists
@@ -37,25 +38,8 @@ app.get("/user/:id", checkToken, async (req, res) => {
 })
 
 //Register User
-app.post("/auth/register", async (req, res) => {
-  const { name, email, password, confirmpassword } = req.body
-
-  //check if user exists
-  const userExists = await User.findOne({ email: email })
-
-  if (userExists) {
-    return res.status(422).json({ msg: "Por favor, utilize outro email!" })
-  }
-
-  //check password match
-  if(confirmpassword === ""){
-    return res.status(400).json({msg:"necessário preenchimento da área de confirmação"})
-  }
-
-  if(confirmpassword !== password){
-    return res.status(400).json({msg:"senhas não conferem"})
-  }
-
+app.post("/auth/register", registerValidator,  async (req, res) => {
+  const { name, email, password } = req.body
 
   //create password
   const salt = await bcrypt.genSalt(12)
