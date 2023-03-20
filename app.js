@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken")
 // middlewares
 const { checkToken } = require("./middlewares/authentication")
 const { validarFormTask } = require("./middlewares/task_validator")
+const { loginValidator } = require("./middlewares/register_validator")
 // models
 const User = require("./models/User")
 const Task = require("./models/Task")
@@ -81,25 +82,13 @@ app.post("/auth/register", async (req, res) => {
 })
 
 // Login User
-app.post("/auth/login", async (req, res) => {
-  const { email, password } = req.body
-
-  // Check if user exists
-  const user = await User.findOne({ email: email })
-
-  if (!user) {
-    return res.status(422).json({ msg: "Usuário não encontrado!" })
-  }
-
-  //check if password match
-  const checkPassword = await bcrypt.compare(password, user.password)
-
-  if (!checkPassword) {
-    return res.status(422).json({ msg: "Senha inválida!" })
-  }
+app.post("/auth/login", loginValidator, async (req, res) => {
 
   try {
     const secret = process.env.SECRET
+    const { email } = req.body
+
+    const user = await User.findOne({ email: email })
 
     const token = jwt.sign(
       {
