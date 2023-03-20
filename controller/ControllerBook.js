@@ -2,6 +2,7 @@ const TaskBook = require("../models/Book")
 const mongoose = require("mongoose")
 const jwt = require("jsonwebtoken")
 
+
 class BookController {
   async index(req, res) {
     try {
@@ -14,8 +15,9 @@ class BookController {
   }
   async store(req, res) {
     try {
-      const [, token] = req.headers.authorization.split(" ")
-      const { id: user_id } = jwt.decode(token)
+      const { user_id } = res.locals
+
+      console.log(user_id)
 
       // CRIAÇÃO BOOK
       const taskBook = await TaskBook.create({
@@ -34,8 +36,7 @@ class BookController {
   }
   async update(req, res) {
     try {
-      const [, token] = req.headers.authorization.split(" ")
-      const { id: user_id } = jwt.decode(token)
+      const { user_id } = res.locals
       const { _id } = req.params
 
       //UPDATE DO BOOK
@@ -65,8 +66,7 @@ class BookController {
   }
   async destroy(req, res) {
     try {
-      const [, token] = req.headers.authorization.split(" ")
-      const { id: user_id } = jwt.decode(token)
+      const { user_id } = res.locals
       const { _id } = req.params
 
       //VALIDAÇÃO DE USUÁRIO AUTORIZADO
@@ -84,7 +84,6 @@ class BookController {
   }
   async show(req, res) {
     try {
-
       const { _id } = req.params
 
       const showBook = await TaskBook.findById(_id)
