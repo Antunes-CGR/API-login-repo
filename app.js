@@ -12,6 +12,7 @@ const { registerValidator } = require("./middlewares/register_validator")
 const { taskDeleteValidator } = require("./middlewares/TaskValidator/taskDelete_validator")
 const { taskUpdateValidator } = require("./middlewares/TaskValidator/taskUpdate_validator")
 const { bookUpdateValidator } = require("./middlewares/BookValidator/bookUpdate_validator")
+const { bookStoreValidator } = require("./middlewares/BookValidator/bookStore_validator")
 // models
 const User = require("./models/User")
 const Task = require("./models/Task")
@@ -176,7 +177,7 @@ app.put("/tasks/:_id/completed", checkToken, async (req, res) => {
 
 //Rotas Controller Book
 app.get("/taskBook", ControllerBook.index)
-app.post("/taskBook", checkToken, ControllerBook.store)
+app.post("/taskBook", checkToken, bookStoreValidator, ControllerBook.store)
 app.put("/taskBook/:_id", checkToken, bookUpdateValidator, ControllerBook.update)
 app.delete("/taskBook/:_id", checkToken, ControllerBook.destroy)
 app.get("/taskBook/:_id", ControllerBook.show)
