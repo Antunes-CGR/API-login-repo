@@ -9,6 +9,7 @@ const { checkToken } = require("./middlewares/authentication")
 const { validarFormTask } = require("./middlewares/task_validator")
 const { loginValidator } = require("./middlewares/login_validator")
 const { registerValidator } = require("./middlewares/register_validator")
+const { taskDeleteValidator } = require("./middlewares/taskDelete_validator")
 // models
 const User = require("./models/User")
 const Task = require("./models/Task")
@@ -111,15 +112,10 @@ app.post("/tasks", checkToken, validarFormTask, async (req, res) => {
   return res.status(201).json(TaskCreate)
 })
 
-app.delete("/tasks/:id", checkToken, async (req, res) => {
+app.delete("/tasks/:id", checkToken, taskDeleteValidator, async (req, res) => {
   try {
     const { user_id } = res.locals
     const id = req.params.id
-
-    // validation
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).json({ msg: "task id inválido" })
-    }
 
     const task = await Task.findOneAndDelete({ user_id, _id: id })
 
