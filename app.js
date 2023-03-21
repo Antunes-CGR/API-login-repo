@@ -98,8 +98,15 @@ app.post("/auth/login", loginValidator, async (req, res) => {
 app.get("/tasks", checkToken, async (req, res) => {
   const { user_id } = res.locals
 
-  const tasks = await Task.find({ user_id })
-  return res.status(200).json(tasks)
+  const {page, limit} = req.query
+  const skip = (page - 1) * limit 
+
+  const tasks = await Task.find({ user_id }, null, {limit, skip}) 
+
+  const totalTask = await Task.count({user_id}) //critério de contagem
+  const totalPages = Math.ceil(totalTask / limit)
+
+  return res.status(200).json({tasks, totalPages})
 })
 
 app.post("/tasks", checkToken, validarFormTask, async (req, res) => {
@@ -163,7 +170,7 @@ app.put("/tasks/:_id/completed", checkToken, async (req, res) => {
     if (!taskDoUsuario) {
       return res.status(404).json({ msg: "Usuário não autorizado" })
     }
-    
+
     // const taskCompleted = await Task.findOneAndUpdate( {_id}, {completed_at: new Date()})
 
     taskDoUsuario.completed_at = new Date()
