@@ -140,7 +140,6 @@ app.put("/tasks/:_id", checkToken, taskUpdateValidator, async (req, res) => {
     const { user_id } = res.locals
     const { _id } = req.params
 
-    // validacao 02 - task eh do usuario?
     const taskDoUsuario = await Task.findOne({ _id, user_id })
 
     taskDoUsuario.titulo = req.body.titulo
@@ -159,17 +158,17 @@ app.put("/tasks/:_id/completed", checkToken, async (req, res) => {
     const { _id } = req.params
     const { user_id } = res.locals
 
-    const taskDoUsuario = await Task.findById({ _id, user_id })
+    const taskDoUsuario = await Task.findOne({ _id, user_id })
 
     if (!taskDoUsuario) {
       return res.status(404).json({ msg: "Usuário não autorizado" })
     }
+    
+    // const taskCompleted = await Task.findOneAndUpdate( {_id}, {completed_at: new Date()})
 
-    const taskCompleted = await Task.findOneAndUpdate({
-      completed_at: new Date(),
-    })
-
-    return res.json(taskCompleted)
+    taskDoUsuario.completed_at = new Date()
+    await taskDoUsuario.save()
+    return res.status(200).json(taskDoUsuario)
   } catch (error) {
     console.log(error)
   }
