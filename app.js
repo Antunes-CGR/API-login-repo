@@ -13,11 +13,13 @@ const { taskDeleteValidator } = require("./middlewares/TaskValidator/taskDelete_
 const { taskUpdateValidator } = require("./middlewares/TaskValidator/taskUpdate_validator")
 const { bookUpdateValidator } = require("./middlewares/BookValidator/bookUpdate_validator")
 const { bookStoreValidator } = require("./middlewares/BookValidator/bookStore_validator")
+
 // models
 const User = require("./models/User")
 const Task = require("./models/Task")
 // controllers
 const ControllerBook = require("./controller/ControllerBook")
+const ControllerAuth = require("./controller/ControllerAuth")
 
 const app = express()
 app.use(express.json())
@@ -28,79 +30,21 @@ app.get("/", (req, res) => {
 })
 
 // Private Route
-app.get("/user/:id", checkToken,  async (req, res) => {
-  const id = req.params.id
-
-  // check if user exists
-  const user = await User.findById(id, "-password")
-
-  if (!user) {
-    return res.status(404).json({ msg: "Usuário não encontrado" })
-  }
-
-  res.status(200).json({ user })
-})
+app.get("/user/:id", checkToken, ControllerAuth.getUser)
 
 //Register User
-app.post("/auth/register", registerValidator,  async (req, res) => {
-  const { name, email, password } = req.body
-
-  //create password
-  const salt = await bcrypt.genSalt(12)
-  const passwordHash = await bcrypt.hash(password, salt)
-
-  //create user
-  const user = new User({
-    name,
-    email,
-    password: passwordHash,
-  })
-
-  try {
-    await user.save()
-
-    res.status(201).json({ msg: "Usuário criado com sucesso!" })
-  } catch (error) {
-    console.log(error)
-
-    res.status(500).json({
-      msg: "Aconteceu algum erro no servidor, tente novamente mais tarde!",
-    })
-  }
-})
+app.post("/auth/register", registerValidator, ControllerAuth.postUser)
 
 // Login User
-app.post("/auth/login", loginValidator, async (req, res) => {
-
-  try {
-    const secret = process.env.SECRET
-    const { email } = req.body
-
-    const user = await User.findOne({ email: email })
-
-    const token = jwt.sign(
-      {
-        id: user._id,
-      },
-      secret
-    )
-
-    res.status(200).json({ msg: "Autenticação realizada com secuesso", token })
-  } catch (error) {
-    console.log(error)
-
-    res.status(500).json({
-      msg: "Aconteceu um erro no servidor, tente novamente mais tarde!",
-    })
-  }
-})
+app.post("/auth/login", loginValidator, ControllerAuth.loginUser)
 
 // paginação task
 app.get("/tasks", checkToken, async (req, res) => {
   const { user_id } = res.locals
-
+  
   const {page, limit} = req.query
   const skip = (page - 1) * limit //Conta fixa para paginação
+  //const sort = ({ titulo: -1 })
 
   const tasks = await Task.find({ user_id }, null, {limit, skip}) // Paginação
 
@@ -190,7 +134,7 @@ app.delete("/taskBook/:_id", checkToken, ControllerBook.destroy)
 app.get("/taskBook/:_id", ControllerBook.show)
 
 //Paginação TaskBook
-app.get("/taskBook", checkToken, ControllerBook.pag)
+app.get("/Book/pag", checkToken, ControllerBook.list)
 
 //Credenciais
 
