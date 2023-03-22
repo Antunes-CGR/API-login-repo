@@ -95,16 +95,17 @@ app.post("/auth/login", loginValidator, async (req, res) => {
   }
 })
 
+// paginação task
 app.get("/tasks", checkToken, async (req, res) => {
   const { user_id } = res.locals
 
   const {page, limit} = req.query
-  const skip = (page - 1) * limit 
+  const skip = (page - 1) * limit //Conta fixa para paginação
 
-  const tasks = await Task.find({ user_id }, null, {limit, skip}) 
+  const tasks = await Task.find({ user_id }, null, {limit, skip}) // Paginação
 
   const totalTask = await Task.count({user_id}) //critério de contagem
-  const totalPages = Math.ceil(totalTask / limit)
+  const totalPages = Math.ceil(totalTask / limit) // Mostrar limite de paginas ao usuário
 
   return res.status(200).json({tasks, totalPages})
 })
@@ -187,6 +188,9 @@ app.post("/taskBook", checkToken, bookStoreValidator, ControllerBook.store)
 app.put("/taskBook/:_id", checkToken, bookUpdateValidator, ControllerBook.update)
 app.delete("/taskBook/:_id", checkToken, ControllerBook.destroy)
 app.get("/taskBook/:_id", ControllerBook.show)
+
+//Paginação TaskBook
+app.get("/taskBook", checkToken, ControllerBook.pag)
 
 //Credenciais
 
