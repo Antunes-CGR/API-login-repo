@@ -94,15 +94,15 @@ class BookController {
       console.log(error)
     }
   }
-  async pag (req, res, next) {
+  async list (req, res, next) {
     try {
       const { user_id } = res.locals
       const { page, limit } = req.query
       const { skip } = (page - 1) * limit
 
-      const book = await TaskBook.find({ user_id}, null, {limit, skip})
+      const book = await TaskBook.find({user_id}, null, {limit, skip})
       const totalBook = await TaskBook.estimatedDocumentCount({user_id})
-      const totalPages = Math.ceil(totalBook / book)
+      const totalPages = Math.ceil(totalBook / limit)
 
 
       return res.status(200).json({book, totalPages})
