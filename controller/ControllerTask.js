@@ -10,9 +10,9 @@ class ControllerTask {
   
     const {page, limit} = req.query
     const skip = (page - 1) * limit //Conta fixa para paginação
-    //const sort = ({ titulo: -1 })
+    const sort = ({ titulo: 1 })
   
-    const tasks = await Task.find({ user_id }, null, {limit, skip}) // Paginação
+    const tasks = await Task.find({ user_id }, null, {limit, skip, sort}) // Paginação
   
     const totalTask = await Task.count({user_id}) //critério de contagem
     const totalPages = Math.ceil(totalTask / limit) // Mostrar limite de paginas ao usuário
