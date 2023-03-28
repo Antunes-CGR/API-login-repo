@@ -1,10 +1,10 @@
-
-
 //imports
+const mongoose = require("mongoose")
 const Task = require("../models/Task")
 
 
 class ControllerTask {
+
   async getTask (req, res) {
     const { user_id } = res.locals
   
@@ -12,18 +12,32 @@ class ControllerTask {
     const skip = (page - 1) * limit //Conta fixa para paginação
     const sort = ({ titulo: 1 })
   
-    const tasks = await Task.find({ user_id }, null, {limit, skip, sort}) // Paginação
+    const tasks = await Task.find(
+      { user_id: mongoose.Types.ObjectId(user_id) }, // filter / conditions
+      null, // projection / fields
+      {limit, skip, sort} // options
+    ).populate("user_id")
+    
+    const mappedTasks = tasks.map(task => ({
+      _id: task._id,
+      titulo: task.titulo,
+      email: task.user_id.email,
+      created_at: task.created_at,
+      completed_at: task.completed_at,
+    }))
+    
+    // Paginação
   
     const totalTask = await Task.count({user_id}) //critério de contagem
     const totalPages = Math.ceil(totalTask / limit) // Mostrar limite de paginas ao usuário
   
-    return res.status(200).json({tasks, totalPages})
+    return res.status(200).json({ tasks: mappedTasks, totalTask, totalPages })
   }
   async postTask (req, res) {
     const { user_id } = res.locals
 
     const TaskCreate = await Task.create({
-      user_id,
+      user_id: mongoose.Types.ObjectId(user_id),
       titulo: req.body.titulo,
       created_at: new Date(),
       completed_at: null,
