@@ -4,6 +4,7 @@ const express = require("express")
 const mongoose = require("mongoose")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const cors = require("cors")
 // middlewares
 const { checkToken } = require("./middlewares/authentication")
 const { validarFormTask } = require("./middlewares/TaskValidator/task_validator")
@@ -25,6 +26,7 @@ const ControllerTask = require("./controller/ControllerTask")
 
 const app = express()
 app.use(express.json())
+app.use(cors())
 
 //Open Route - Public Route
 app.get("/", (req, res) => {
@@ -68,9 +70,12 @@ mongoose
   .connect(
     `mongodb+srv://${dbUser}:${dbPassword}@cluster0.rk5a4ed.mongodb.net/?retryWrites=true&w=majority`
   )
+  //callback que retorna sucesso ou falha
   .then(() => {
-    //call nack que retorna sucesso ou falha
-    app.listen(3000)
     console.log("Conectou ao Banco!")
+
+    const port = process.env.PORT || 3000
+    app.listen(port)
+    console.log(`Server iniciou na porta ${port}`)
   })
   .catch((err) => console.log(err))
