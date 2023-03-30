@@ -1,10 +1,14 @@
-const { model, Schema } = require("mongoose")
+const mongoose = require("mongoose")
+const { Schema } = require("mongoose")
 
-const TaskBook = new Schema({
-  user_id: String,
+const TaskBook = mongoose.model("Book", {
+  user_id: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
   titulo: String,
   autor: String,
   ISBN: String,
 })
 
-module.exports = model("book", TaskBook)
+module.exports = TaskBook
