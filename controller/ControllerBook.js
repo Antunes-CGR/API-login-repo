@@ -112,15 +112,15 @@ class BookController {
         _id: book._id,
         titulo: book.titulo,
         email: book.user_id.email,
+        autor: book.autor,
+        ISBN: book.ISBN
       }))
 
-
-      const book = await TaskBook.find({user_id}, null, {limit, skip})
       const totalBook = await TaskBook.estimatedDocumentCount({user_id})
       const totalPages = Math.ceil(totalBook / limit)
 
 
-      return res.status(200).json({mappedTaskBook, book, totalPages})
+      return res.status(200).json({mappedTaskBook, totalPages})
 
     } catch (error) {
       next(error)
