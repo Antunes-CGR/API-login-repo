@@ -7,7 +7,7 @@ const registerValidator = async (req, res, next) => {
   const userExists = await User.findOne({ email: email })
 
   if (userExists) {
-    return res.status(422).json({ msg: "Por favor, utilize outro email!" })
+    return res.status(402).json({ msg: "Por favor, utilize outro email!" })
   }
 
   //check password match
