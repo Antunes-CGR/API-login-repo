@@ -1,8 +1,8 @@
 const mongoose = require("mongoose")
-const jwt = require("jsonwebtoken")
 
 // imports 
 const TaskBook = require("../models/Book")
+
 
 class BookController {
   async index(req, res) {
@@ -97,15 +97,30 @@ class BookController {
   async list (req, res, next) {
     try {
       const { user_id } = res.locals
+
       const { page, limit } = req.query
       const { skip } = (page - 1) * limit
+      const { sort } = ({ titulo: 1})
+      
+      const ListTaksBook = await TaskBook.find(
+        { user_id: mongoose.Types.ObjectId(user_id) },
+        null, 
+        {limit, skip, sort} 
+      ).populate("user_id")
+      
+      const mappedTaskBook = ListTaksBook.map(book => ({
+        _id: book._id,
+        titulo: book.titulo,
+        email: book.user_id.email,
+      }))
+
 
       const book = await TaskBook.find({user_id}, null, {limit, skip})
       const totalBook = await TaskBook.estimatedDocumentCount({user_id})
       const totalPages = Math.ceil(totalBook / limit)
 
 
-      return res.status(200).json({book, totalPages})
+      return res.status(200).json({mappedTaskBook, book, totalPages})
 
     } catch (error) {
       next(error)
