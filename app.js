@@ -59,7 +59,7 @@ app.delete("/taskBook/:_id", checkToken, ControllerBook.destroy)
 app.get("/taskBook/:_id", ControllerBook.show)
 
 //Paginação TaskBook
-app.get("/Book/pag", checkToken, ControllerBook.list)
+app.get("/Book/pag", ControllerBook.list)
 
 //Credenciais
 const dbUser = process.env.DB_USER

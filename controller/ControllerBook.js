@@ -96,19 +96,17 @@ class BookController {
   }
   async list (req, res, next) {
     try {
-      const { user_id } = res.locals
-
       const { page, limit } = req.query
       const { skip } = (page - 1) * limit
       const { sort } = ({ titulo: 1})
       
-      const ListTaksBook = await TaskBook.find(
-        { user_id: mongoose.Types.ObjectId(user_id) },
+      const ListTaskBook = await TaskBook.find(
+        {  },
         null, 
         {limit, skip, sort} 
       ).populate("user_id")
       
-      const mappedTaskBook = ListTaksBook.map(book => ({
+      const mappedTaskBook = ListTaskBook.map(book => ({
         _id: book._id,
         titulo: book.titulo,
         email: book.user_id.email,
@@ -116,8 +114,8 @@ class BookController {
         ISBN: book.ISBN
       }))
 
-      const totalBook = await TaskBook.estimatedDocumentCount({user_id})
-      const totalPages = Math.ceil(totalBook / limit)
+      const totalBook = await TaskBook.estimatedDocumentCount({})
+      const totalPages = Math.ceil( totalBook, limit)
 
 
       return res.status(200).json({mappedTaskBook, totalPages})
